@@ -364,9 +364,9 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRequestLocalization(new RequestLocalizationOptions()
-    .SetDefaultCulture("en")
-    .AddSupportedCultures("en", "de", "es", "fr", "it", "sl", "nl", "ru", "hu")
-    .AddSupportedUICultures("en", "de", "es", "fr", "it", "sl", "nl", "ru", "hu"));
+    .SetDefaultCulture("en-US")
+    .AddSupportedCultures("en-US", "en-GB", "de", "es", "fr", "it", "sl", "nl", "ru", "hu")
+    .AddSupportedUICultures("en-US", "en-GB", "de", "es", "fr", "it", "sl", "nl", "ru", "hu"));
 app.UseRouting();
 app.UseSession();
 

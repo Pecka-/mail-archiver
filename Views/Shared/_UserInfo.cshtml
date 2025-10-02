@@ -51,8 +51,9 @@
                     <div class="mb-2">
                         <label class="form-label small text-muted mb-1">@Localizer["Language"]</label>
                         <select name="culture" class="form-select form-select-sm" onchange="this.form.submit()">
-                            @{ var ui = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName; }
-                            <option value="en" selected="@(ui=="en" ? "selected" : null)">English</option>
+                            @{ var ui = System.Threading.Thread.CurrentThread.CurrentUICulture.Name; }
+                            <option value="en-US" selected="@(ui=="en-US" ? "selected" : null)">English (US)</option>
+                            <option value="en-GB" selected="@(ui=="en-GB" ? "selected" : null)">English (UK)</option>
                             <option value="sl" selected="@(ui=="sl" ? "selected" : null)">Slovenščina</option>
                             <option value="de" selected="@(ui=="de" ? "selected" : null)">Deutsch</option>
                             <option value="it" selected="@(ui=="it" ? "selected" : null)">Italiano</option>
