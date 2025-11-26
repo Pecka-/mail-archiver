@@ -6,6 +6,7 @@ namespace MailArchiver.Data
     public class MailArchiverDbContext : DbContext
     {
         public DbSet<MailAccount> MailAccounts { get; set; }
+        public DbSet<MailAccountFolder> MailAccountFolders { get; set; }
         public DbSet<ArchivedEmail> ArchivedEmails { get; set; }
         public DbSet<EmailAttachment> EmailAttachments { get; set; }
         public DbSet<User> Users { get; set; }

@@ -353,16 +353,41 @@ namespace MailArchiver.Services
                     await folder.OpenAsync(FolderAccess.ReadOnly);
                 }
 
-                bool isOutgoing = IsOutgoingFolder(folder);
-                var lastSync = account.LastSync;
-                
-                // Subtract 12 hours from lastSync for the query, but only if it's not the Unix epoch (1/1/1970)
-                if (lastSync != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                MailAccountFolder? accountFolder = _context.MailAccountFolders.FirstOrDefault(f => f.MailAccountId == account.Id && f.UidValidity == folder.UidValidity);
+                if (accountFolder == null)
                 {
-                    lastSync = lastSync.AddHours(-12);
+                    accountFolder = new MailAccountFolder
+                    {
+                        Name = folder.FullName,
+                        MailAccountId = account.Id,
+                        UidValidity = folder.UidValidity,
+                        LastSync = account.LastSync,
+                        LastSyncModSeq = null
+                    };
+                    _context.MailAccountFolders.Add(accountFolder);
+                    await _context.SaveChangesAsync();
                 }
+
+                bool isOutgoing = IsOutgoingFolder(folder);
+                DateTime lastSync = accountFolder.LastSync;
+                ulong highestModSeq = folder.HighestModSeq; // remember the highest ModSeq at start of sync, we'll save this as 'last sync' at the end
+                DateTime newLastSync = DateTime.UtcNow; // remember the last sync date from before the sync, so we don't miss any emails that arrive during the sync
                 
-                var query = SearchQuery.DeliveredAfter(lastSync);
+                SearchQuery query;
+                if (account.UseModSeq)
+                {
+                    query = SearchQuery.ChangedSince((accountFolder.LastSyncModSeq ?? 0) + 1);
+                }
+                else
+                {
+                    // Subtract 12 hours from lastSync for the query, but only if it's not the Unix epoch (1/1/1970)
+                    if (lastSync != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                    {
+                        lastSync = lastSync.AddHours(-12);
+                    }
+
+                    query = SearchQuery.DeliveredAfter(lastSync);
+                }
 
                 try
                 {
@@ -528,6 +553,10 @@ namespace MailArchiver.Services
                             await Task.Delay(_batchOptions.PauseBetweenEmailsMs);
                         }
                     }
+                    accountFolder.LastSync = newLastSync;
+                    accountFolder.LastSyncModSeq = highestModSeq;
+                    _context.Entry(accountFolder).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
