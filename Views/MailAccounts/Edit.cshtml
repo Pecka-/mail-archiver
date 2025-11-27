@@ -126,6 +126,15 @@
                             @Localizer["CouldNotLoadFolders"]
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UseModSeq" class="form-label">@Localizer["ModSeqOrReceivedDate"]</label>
+                        <select asp-for="UseModSeq" class="form-select">
+                            <option value="@true">@Localizer["UseModSeq"]</option>
+                            <option value="@false">@Localizer["UseReceivedDate"]</option>
+                        </select>
+                        <span asp-validation-for="UseModSeq" class="text-danger"></span>                    
+                    </div>
                     
                     @if (Model.LastSync.HasValue)
                     {

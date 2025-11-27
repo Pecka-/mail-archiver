@@ -69,6 +69,15 @@
                         <input asp-for="UseSSL" class="form-check-input" />
                         <label asp-for="UseSSL" class="form-check-label">@Localizer["UseSSL"]</label>
                     </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UseModSeq" class="form-label">@Localizer["ModSeqOrReceivedDate"]</label>
+                        <select asp-for="UseModSeq" class="form-select">
+                            <option value="@true">@Localizer["UseModSeq"]</option>
+                            <option value="@false">@Localizer["UseReceivedDate"]</option>
+                        </select>
+                        <span asp-validation-for="UseModSeq" class="text-danger"></span>     
+                    </div>
                 </div>
                 
                 <div id="microsoft365Settings" style="display: none;">

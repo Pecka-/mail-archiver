@@ -31,6 +31,9 @@ namespace MailArchiver.Models.ViewModels
         [Display(Name = "Use SSL")]
         public bool UseSSL { get; set; } = true;
         
+        [Display(Name = "Use ModSeq")]
+        public bool UseModSeq { get; set; } = false;
+        
         [Display(Name = "Last sync")]
         public DateTime? LastSync { get; set; }
 

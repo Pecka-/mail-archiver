@@ -134,6 +134,7 @@ namespace MailArchiver.Controllers
                     ImapPort = a.ImapPort,
                     Username = a.Username,
                     UseSSL = a.UseSSL,
+                    UseModSeq = a.UseModSeq,
                     IsEnabled = a.IsEnabled,
                     LastSync = a.LastSync,
                     DeleteAfterDays = a.DeleteAfterDays,
@@ -172,6 +173,7 @@ var model = new MailAccountViewModel
                 ImapPort = account.ImapPort,
                 Username = account.Username,
                 UseSSL = account.UseSSL,
+                UseModSeq = account.UseModSeq,
                 LastSync = account.LastSync,
                 IsEnabled = account.IsEnabled,
                 DeleteAfterDays = account.DeleteAfterDays,
@@ -189,6 +191,7 @@ var model = new MailAccountViewModel
             {
                 ImapPort = 993, // Standard values
                 UseSSL = true,
+                UseModSeq = true,
                 Provider = ProviderType.IMAP
             };
             return View(model);
@@ -210,6 +213,7 @@ var model = new MailAccountViewModel
                     Username = model.Provider == ProviderType.IMPORT || model.Provider != ProviderType.IMAP ? null : model.Username,
                     Password = model.Provider == ProviderType.IMPORT || model.Provider != ProviderType.IMAP ? null : model.Password,
                     UseSSL = model.UseSSL,
+                    UseModSeq = model.UseModSeq,
                     IsEnabled = model.IsEnabled,
                     Provider = model.Provider,
                     ClientId = model.Provider == ProviderType.M365 ? model.ClientId : null,
@@ -325,6 +329,7 @@ var model = new MailAccountViewModel
                 ImapPort = account.ImapPort,
                 Username = account.Username,
                 UseSSL = account.UseSSL,
+                UseModSeq = account.UseModSeq,
                 IsEnabled = account.IsEnabled,
                 LastSync = account.LastSync,
                 ExcludedFolders = account.ExcludedFolders,
@@ -451,6 +456,7 @@ var model = new MailAccountViewModel
                     }
 
                     account.UseSSL = model.UseSSL;
+                    account.UseModSeq = model.UseModSeq;
                     account.ExcludedFolders = model.ExcludedFolders ?? string.Empty;
                     account.DeleteAfterDays = model.DeleteAfterDays;
                     account.LocalRetentionDays = model.LocalRetentionDays;
