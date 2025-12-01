@@ -26,6 +26,7 @@ namespace MailArchiver.Services
         Task<List<string>> GetMailFoldersAsync(int accountId);
         Task<(int Successful, int Failed)> RestoreMultipleEmailsWithProgressAsync(List<int> emailIds, int targetAccountId, string folderName, Action<int, int, int> progressCallback, CancellationToken cancellationToken = default);
         Task<bool> ResyncAccountAsync(int accountId);
+        Task<bool> SetModSeqToLatestForAllFoldersAsync(int accountId);
         Task<int> GetEmailCountByAccountAsync(int accountId);
     }
 }

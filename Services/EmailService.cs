@@ -310,6 +310,59 @@ namespace MailArchiver.Services
             }
         }
 
+        public async Task<bool> SetModSeqToLatestForAllFoldersAsync(int accountId)
+        {
+            try
+            {
+                var account = await _context.MailAccounts.FindAsync(accountId);
+                if (account == null)
+                {
+                    _logger.LogError("Account with ID {AccountId} not found for ModSeq reset", accountId);
+                    return false;
+                }
+
+                using var client = CreateImapClient(account.Name);
+                client.Timeout = 180000;
+                client.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+
+                await ConnectWithFallbackAsync(client, account.ImapServer, account.ImapPort ?? 993, account.UseSSL, account.Name);
+                await AuthenticateClientAsync(client, account);
+
+                _logger.LogInformation("Setting ModSeq to latest for account {AccountName} (Provider: {Provider})", 
+                    account.Name, account.Provider);
+
+                var folders = await _context.MailAccountFolders
+                    .Where(f => f.MailAccountId == accountId)
+                    .ToListAsync();
+                foreach (var folder in folders)
+                {
+                    var imapFolder = await client.GetFolderAsync(folder.Name);
+                    if (!imapFolder.IsOpen)
+                    {
+                        await imapFolder.OpenAsync(FolderAccess.ReadOnly);
+                    }
+                    if (imapFolder == null)
+                    {
+                        _logger.LogWarning("Folder {FolderName} not found on server for account {AccountName}, skipping ModSeq update",
+                            folder.Name, account.Name);
+                        continue;
+                    }
+                    folder.LastSyncModSeq = imapFolder.HighestModSeq;
+                    _context.Entry(folder).Property(f => f.LastSyncModSeq).IsModified = true;
+
+                    await imapFolder.CloseAsync();
+                }
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error whilst setting ModSeq to latest for account {AccountId}", accountId);
+                return false;
+            }            
+        }
+
         // NEUE GetEmailCountByAccountAsync Methode
         public async Task<int> GetEmailCountByAccountAsync(int accountId)
         {

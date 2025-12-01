@@ -1069,6 +1069,9 @@ var model = new MailAccountViewModel
             account.LastSync = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
+            // Do the same for all folders, setting their ModSeq to the latest
+            await _emailService.SetModSeqToLatestForAllFoldersAsync(id);
+
             TempData["SuccessMessage"] = _localizer["SyncTimeResetSuccess"].Value;
             return RedirectToAction(nameof(Details), new { id });
         }
